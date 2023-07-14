@@ -7,18 +7,39 @@ const { Core } = require('@adobe/aio-sdk')
 const fetch = require('node-fetch')
 const { errorResponse, stringParameters, checkMissingRequestInputs } = require('../utils')
 
-// Set up an Incoming Webhooks for your team: https://api.slack.com/incoming-webhooks
-// Then update the following variables with your slack config values
-const slackWebhook = 'https://hooks.slack.com/services/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'
-const slackChannel = 'general'
-
 // main function that will be executed by Adobe I/O Runtime
 async function main (params) {
   // create a Logger
   const logger = Core.Logger('main', { level: params.LOG_LEVEL || 'info' })
+  logger.info(`CF Event Fired`)
 
+  // Set up an Incoming Webhooks for your team: https://api.slack.com/incoming-webhooks
+  // Then update the following variables with your slack config values
+  const slackWebhook = params.SLACK_WEBHOOK_URL
+  const slackChannel = params.SLACK_CHANNEL
+
+  const cfpath = params.data.path;
+  const cftype = params.type;
+  const cfmodelid = String(params.data.model.id)
+  const cfmodel = cfmodelid.substring(cfmodelid.lastIndexOf('/') + 1);
+  const cfname = String(params.data.path).substring(cfpath.lastIndexOf('/') + 1);
+  let cfpreviewurl = "https://experience.adobe.com/#/@mark-szulc/custom-apps/20092-cfpreview?cf=" + cfpath + "&variation=main";
+
+  let cfaction = "Unknown";
+
+  switch(cftype) {
+    case 'aem.sites.contentFragment.modified':
+      cfaction = "Modified";
+      break
+    case 'aem.sites.contentFragment.created':
+      cfaction = "Created";
+      break
+    }
+
+
+    
   try { 
-    const slackMessage = "Hello!"
+    const slackMessage = "Content Fragment " + cfname + " " + cfaction + " <" + cfpreviewurl + "|Preview>";
       
     const payload = {
       channel: slackChannel,
@@ -36,10 +57,11 @@ async function main (params) {
       body: JSON.stringify(payload)
     }
 
-    await fetch(slackWebhook, slackOpts)
+    const foo = await fetch(slackWebhook, slackOpts)
+
 
     const response = {
-      statusCode: 200,
+      statusCode: foo.status,
       body: { message: 'posted to slack' }
     }
 

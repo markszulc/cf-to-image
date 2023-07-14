@@ -24,6 +24,8 @@ runtimeManifest:
           runtime: nodejs:16
           inputs:
             LOG_LEVEL: debug
+            SLACK_WEBHOOK_URL: $SLACK_WEBHOOK_URL
+            SLACK_CHANNEL: $SLACK_CHANNEL
           annotations:
             require-adobe-auth: true
             final: true
