@@ -1,8 +1,3 @@
-/**
- * Demonstrating how to write an event handler for webhook calls
- *
- * This action is expose as a web action, you can use its URL to register as a webhook for I/O Events
- */
 const { Core } = require('@adobe/aio-sdk')
 const fetch = require('node-fetch')
 const { errorResponse, stringParameters, checkMissingRequestInputs } = require('../utils')
@@ -33,6 +28,9 @@ async function main (params) {
       break
     case 'aem.sites.contentFragment.created':
       cfaction = "Created";
+      break
+    case 'aem.sites.contentFragment.variation':
+      cfaction = "Variation Changed";
       break
     }
 
